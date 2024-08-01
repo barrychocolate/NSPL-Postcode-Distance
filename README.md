@@ -45,8 +45,6 @@ pip install pandas
 Import libraries and read data:
 ```
 import pandas as pd
-import sqlite3
-import itertools
 import math
 
 nspl_path = 'data/NSPL21_MAY_2024_UK.csv'
@@ -85,8 +83,8 @@ Example usage:
 ```
 data = {
     'id': [1, 2, 3, 4, 5],
-    'start_postcode': ['AB1 0AA', 'AB2 0BB', 'AB3 0CC', 'AB4 0DD', 'AB5 0EE'],
-    'end_postcode': ['AB1 1AA', 'AB2 1BB', 'AB3 1CC', 'AB4 1DD', 'AB5 1EE']
+    'start_postcode': ['EC1P 1DR', 'BN52 9XH', 'W1F 7BY', 'LE8 0TR', 'BS4 2PJ'],
+    'end_postcode': ['PO4 9UG', 'W4 2RJ', 'WA7 5JW', 'L39 3LN', 'WF10 1BY']
 }
 df = pd.DataFrame(data)
 df['distance'] = df.apply(lambda row: calculate_distance(row['start_postcode'], row['end_postcode']), axis=1)
