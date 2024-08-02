@@ -1,5 +1,5 @@
 # Postcode Distance Calculator
-This project uses the ONS National Statistics Postcode Lookup (NSPL) dataset to calculate the distance in meters between two postcodes in the UK.
+This project is designed to calculate distances between postcodes and identify outliers in the distance measurements using statistical methods.
 
 # Table of Contents
 * Introduction
@@ -16,8 +16,13 @@ The Postcode Distance Calculator is a Python tool that calculates the distance i
 Prerequisites
 * Python 3.6 or higher
 * pandas
+* numpy
+* pathlib
 * math
 
+```
+pip install pandas numpy
+```
 
 # Installation
 1. Clone the repository:
@@ -46,6 +51,8 @@ Import libraries and read data:
 ```
 import pandas as pd
 import math
+import numpy as np
+from pathlib import Path
 
 nspl_path = 'data/NSPL21_MAY_2024_UK.csv'
 columns_to_load = ['pcds', 'oseast1m', 'osnrth1m']
@@ -82,14 +89,40 @@ def calculate_distance(start_pcode, end_pcode):
 Example usage:
 ```
 data = {
-    'id': [1, 2, 3, 4, 5],
-    'start_postcode': ['EC1P 1DR', 'BN52 9XH', 'W1F 7BY', 'LE8 0TR', 'BS4 2PJ'],
-    'end_postcode': ['PO4 9UG', 'W4 2RJ', 'WA7 5JW', 'L39 3LN', 'WF10 1BY']
+        'id': [1, 2, 3, 4, 5],
+        'start_postcode': ['AB1 0AA', 'BD21 3RU', 'DD10 8DS', 'HP2 7QL', 'NE12 0XS'],
+        'end_postcode': ['AB1 0AX', 'BD21 3SF', 'DD10 8DT', 'HP2 7QX', 'G84 9EP']
 }
+
 df = pd.DataFrame(data)
 df['distance'] = df.apply(lambda row: calculate_distance(row['start_postcode'], row['end_postcode']), axis=1)
 print(df)
 ```
+
+# Identify Outliers
+## Using IQR Method
+The Interquartile Range (IQR) method is used to identify outliers in the distance_meters column.
+
+```
+# Calculate Q1 (25th percentile) and Q3 (75th percentile)
+Q1 = df['distance_meters'].quantile(0.25)
+Q3 = df['distance_meters'].quantile(0.75)
+
+# Calculate the IQR (Interquartile Range)
+IQR = Q3 - Q1
+
+# Define the outlier boundaries
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+# Identify outliers
+outliers_iqr = df[(df['distance_meters'] < lower_bound) | (df['distance_meters'] > upper_bound)]
+
+print("Outliers using IQR method:")
+print(outliers_iqr)
+
+```
+
 # Functions
 ## format_postcode(postcode)
 Formats a postcode by removing spaces, converting to uppercase, and inserting a space before the last three characters.
